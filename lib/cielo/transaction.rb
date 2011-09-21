@@ -41,6 +41,14 @@ module Cielo
       make_request! message
     end
     
+    def cancel!(cielo_tid)
+      return nil unless cielo_tid
+      message = xml_builder("requisicao-cancelamento", :before) do |xml|
+        xml.tid "#{cielo_tid}"
+      end
+      make_request! message
+    end
+    
     private
     def analysis_parameters(parameters={})
       [:numero, :valor, :bandeira, :"url-retorno"].each do |parameter|
@@ -60,7 +68,7 @@ module Cielo
     def xml_builder(group_name, target=:after, &block)
       xml = Builder::XmlMarkup.new
       xml.instruct! :xml, :version=>"1.0", :encoding=>"ISO-8859-1"
-      xml.tag!(group_name, :id => "#{Time.now.to_i}", :versao => "1.1.0") do
+      xml.tag!(group_name, :id => "#{Time.now.to_i}", :versao => "1.1.1") do
         block.call(xml) if target == :before
         xml.tag!("dados-ec") do
           xml.numero Cielo.numero_afiliacao
